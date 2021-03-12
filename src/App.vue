@@ -142,9 +142,9 @@ export default {
       todo: "",
       todos: [],
       place: [
-        { value: "Prishtine", text: "Prishtine" },
-        { value: "Peje", text: "Peje" },
-        { value: "Mitrovice", text: "Mitrovice" },
+        { value: "Prishtinë", text: "Prishtinë" },
+        { value: "Pejë", text: "Pejë" },
+        { value: "Mitrovicë", text: "Mitrovicë" },
         { value: "Gjilan  ", text: "Gjilan" },
       ],
     };
