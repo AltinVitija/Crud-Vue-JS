@@ -7,11 +7,7 @@
       </h3>
       <b-row>
         <b-col cols="12" md="8" style="padding-right: 55px">
-          <table
-            v-for="todo in todos"
-            :key="todo.id"
-            class="table white-sm table-white"
-          >
+          <table class="table white-sm table-white">
             <thead>
               <tr>
                 <th scope="col">Name</th>
@@ -19,71 +15,63 @@
                 <th scope="col">Birthday</th>
                 <th scope="col">Gender</th>
                 <th scope="col">Place</th>
-                <!-- <b-button @click="deleteTodo(todo.id)" variant="secondary"
-                  >Edit</b-button
-                > -->
-                <b-button
-                  @click="deleteTodo(todo.id)"
-                  variant="danger"
-                  style="margin: 10px"
-                  >Delete</b-button
-                >
               </tr>
             </thead>
-            <tbody>
+            <tbody v-for="todo in todos" :key="todo.id">
               <tr>
-                <td @dblclick="editTodo(todo)">{{ todo.name }}</td>
+                <td>{{ todo.name }}</td>
                 <td>{{ todo.surname }}</td>
                 <td>{{ todo.birthday }}</td>
                 <td>{{ todo.gender }}</td>
                 <td>{{ todo.selected }}</td>
+                <td>
+                  <b-button
+                    style="margin-right: 5px"
+                    @click="showModal"
+                    variant="secondary"
+                    >Edit</b-button
+                  >
+                  <b-button @click="deleteTodo(todo.id)" variant="danger"
+                    >Delete</b-button
+                  >
+                </td>
               </tr>
             </tbody>
           </table>
         </b-col>
-        <b-col cols="8" md="4" style="margin-top: -80px">
-          <h3 style="margin-bottom: 30px; font-weight: bold">
-            Create new Student
-          </h3>
-
-          <label @dblclick="editTodo(todo)">{{ todo.name }}</label>
-          <label style="margin-right: 310px; font-weight: bold">Name</label>
-
+        <div>
+          <b-button id="show-btn" @click="showModal"
+            >Create new Student
+          </b-button>
+        </div>
+        <b-modal ref="my-modal" hide-footer title="Create new Student">
+          <label style="font-weight: bold">Name</label>
           <b-form-input
-            style="margin-bottom: 20px"
             @keyup.enter="addTodo"
             v-model="name"
             placeholder="Enter your name"
           ></b-form-input>
           <label style="margin-right: 290px; font-weight: bold">Surname</label>
           <b-form-input
-            style="margin-bottom: 20px"
             v-model="surname"
             placeholder="Enter your Surname"
           ></b-form-input>
-          <label
-            for="example-datepicker"
-            style="margin-bottom: 10px; margin-right: 200px; font-weight: bold"
+          <label for="example-datepicker" style="font-weight: bold"
             >Choose a Birthday</label
           >
           <b-form-datepicker
-            style="margin-bottom: 20px"
             id="example-datepicker"
             v-model="birthday"
             class="mb-2"
           ></b-form-datepicker>
-          <label
-            for="example-datepicker"
-            style="margin-bottom: 15px; margin-right: 205px; font-weight: bold"
+          <label for="example-datepicker" style="font-weight: bold"
             >Choose a Gender</label
           >
-
           <b-form-checkbox-group
             style="
-              margin-bottom: 20px;
-              margin-right: 100px;
               display: flex;
               flex-direction: row-reverse;
+              margin-right: 280px;
             "
             id="checkbox-group-1"
             v-model="gender"
@@ -92,7 +80,7 @@
             name="flavour-1"
           >
             <b-form-radio
-              style="margin-left: 100px"
+              style="margin-left: 50px"
               v-model="gender"
               :aria-describedby="ariaDescribedby"
               name="some-radios"
@@ -107,26 +95,20 @@
               >Men</b-form-radio
             >
           </b-form-checkbox-group>
-          <label
-            for="example-datepicker"
-            style="margin-bottom: 10px; margin-right: 220px; font-weight: bold"
+          <label for="example-datepicker" style="font-weight: bold"
             >Choose a Place</label
           >
-          <b-form-select
-            style="margin-bottom: 40px"
-            v-model="selected"
-            :options="place"
-          ></b-form-select>
-
-          <button
-            style="width: 350px"
+          <b-form-select v-model="selected" :options="place"></b-form-select>
+          <b-button
+            style="width: 470px"
+            class="mt-3"
+            variant="outline-primary"
             @click="addTodo(todo.id)"
             type="button"
-            class="btn btn-primary"
           >
             Save
-          </button>
-        </b-col>
+          </b-button>
+        </b-modal>
       </b-row>
     </b-container>
   </div>
@@ -140,16 +122,23 @@ export default {
   data() {
     return {
       todo: "",
+      todoItem: {},
       todos: [],
       place: [
-        { value: "Prishtinë", text: "Prishtinë" },
-        { value: "Pejë", text: "Pejë" },
-        { value: "Mitrovicë", text: "Mitrovicë" },
-        { value: "Gjilan  ", text: "Gjilan" },
+        { value: "Prishtine", text: "Prishtine" },
+        { value: "Peje", text: "Peje" },
+        { value: "Mitrovice", text: "Mitrovice" },
+        { value: "Gjilan  ", text: "Gjilan", disabled: true },
       ],
     };
   },
   methods: {
+    showModal() {
+      this.$refs["my-modal"].show();
+    },
+    hideModal() {
+      this.$refs["my-modal"].hide();
+    },
     addTodo() {
       this.todos.push({
         selected: this.selected,
@@ -169,21 +158,11 @@ export default {
     updateLocalStorage(todos) {
       localStorage.setItem("todos", JSON.stringify(todos));
     },
-    editTodo(todo) {
-      this.editTodo = todo;
-    },
-    doneEdit(todo) {
-      if (!this.editTodo) {
-        return;
-      }
-      this.editTodo = null;
-      todo.name = todo.name.trim();
-      if (!todo.name) {
-        this.deleteTodo(todo);
-      }
-    },
   },
-
+  edit: function (todos) {
+    this.todo.name = todos.name;
+    this.todo.surname = todos.surname;
+  },
   created() {
     const ls_todos = localStorage.getItem("todos");
     if (ls_todos !== null) this.todos = JSON.parse(ls_todos);
